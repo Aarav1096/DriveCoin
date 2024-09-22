@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Speed Tracker with Leaflet</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 400px; }
+    </style>
+</head>
+<body>
+    <h1>Track Your Speed with OpenStreetMap</h1>
+    <div id="map"></div>
+    <div id="info">
+        <p>Speed: <span id="speed">0</span> m/s</p>
+        <p>Latitude: <span id="latitude"></span></p>
+        <p>Longitude: <span id="longitude"></span></p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const map = L.map('map').setView([37.7749, -122.4194], 12); // Default location: San Francisco
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        let marker = L.marker([37.7749, -122.4194]).addTo(map);
+
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(updatePosition, showError, { enableHighAccuracy: true });
+        }
+
+        function updatePosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const speed = position.coords.speed || 0;
+
+            document.getElementById('latitude').textContent = lat;
+            document.getElementById('longitude').textContent = lng;
+            document.getElementById('speed').textContent = speed.toFixed(2); // Display speed in m/s
+
+            const userLocation = [lat, lng];
+
+            map.setView(userLocation);
+            marker.setLatLng(userLocation);
+        }
+
+        function showError(error) {
+            alert("Error: " + error.message);
+        }
+    </script>
+</body>
+</html>
